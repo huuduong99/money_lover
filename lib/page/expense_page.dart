@@ -75,15 +75,17 @@ class _ExpensePageState extends State<ExpensePage> {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-           children: [
-             Text(expense.expenseContent.toString(),style: TextStyle(color: Colors.white,fontSize: 20),),
-             const SizedBox(height: 10),
-             Text(expense.amount.toString()+' VND',style: TextStyle(color: Colors.white,fontSize: 15),),
-             const SizedBox(height: 5),
-             Text(expense.date.toString(),style: TextStyle(color: Colors.white,fontSize: 15),)
-           ],
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+             children: [
+               Text(expense.expenseContent.toString(),style: TextStyle(color: Colors.white,fontSize: 20),),
+               const SizedBox(height: 10),
+               Text(expense.amount.toString()+' VND',style: TextStyle(color: Colors.white,fontSize: 15),),
+               const SizedBox(height: 5),
+               Text(expense.date.toString(),style: TextStyle(color: Colors.white,fontSize: 15),)
+             ],
+            ),
           ),
           Align(
             alignment: Alignment.center,

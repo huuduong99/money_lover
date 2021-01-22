@@ -3,9 +3,10 @@ class Expense {
   final String expenseContent;
   final double amount;
   final int type; // 1: thu vào, 0: chi ra
+  final int categoryId;
   final String date;
 
-  Expense({this.id, this.expenseContent, this.amount, this.type, this.date});
+  Expense({this.id, this.expenseContent, this.amount, this.type, this.categoryId, this.date});
 
   factory Expense.fromMap(Map<String, dynamic> map){
     return Expense(
@@ -13,6 +14,7 @@ class Expense {
       expenseContent: map['expense_content'],
       amount: map['amount'],
       type: map['type'],
+      categoryId: map['category_id'],
       date: map['date'],
     );
   }
@@ -23,6 +25,7 @@ class Expense {
       'expense_content': expenseContent,
       'amount': amount,
       'type': type,
+      'category_id':categoryId,
       'date': date,
     };
   }

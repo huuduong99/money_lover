@@ -31,7 +31,8 @@ dependencies:
   sqflite: ^1.3.2+2
   flutter_slidable: ^0.5.7
   flutter_datetime_picker: ^1.4.0
-  intl: ^0.16.1
+  intl: ^0.15.8
+  flutter_money_formatter: ^0.8.3
 
 dev_dependencies:
   flutter_test:

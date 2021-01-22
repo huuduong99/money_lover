@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
 import 'package:money_lover/database/database_helper.dart';
+import 'package:money_lover/model/category_model.dart';
 import 'package:money_lover/model/expense_model.dart';
+import 'package:money_lover/page/select_category_expense_page.dart';
 
 class InsertExpensePage extends StatefulWidget {
   @override
@@ -12,7 +14,8 @@ class InsertExpensePage extends StatefulWidget {
 class _InsertExpensePageState extends State<InsertExpensePage> {
   static DBHelper dbHelper = DBHelper();
   final List<String> _style = ['Thu vào', 'Chi ra'];
-  String _currentItemSelected = 'Thu vào';
+  String _currentItemStyleSelected;
+  Category _category;
   final _dateFormat = new DateFormat('dd-MM-yyyy');
   String _date;
   TextEditingController _contentController = TextEditingController();
@@ -22,26 +25,28 @@ class _InsertExpensePageState extends State<InsertExpensePage> {
   void initState() {
     super.initState();
     _date = _dateFormat.format(DateTime.now());
+    _currentItemStyleSelected = _style[0];
   }
 
-  Widget _buildStyle() {
+  Widget _buildDropdownSelect() {
     return Padding(
       padding: EdgeInsets.all(15),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           Text(
-            'Loại',
-            style: TextStyle(fontSize: 18),
+            "Loại",
+            style: TextStyle(fontSize: 15),
           ),
           Theme(
-              data: Theme.of(context).copyWith(dividerColor: Colors.transparent),
+              data:
+              Theme.of(context).copyWith(dividerColor: Colors.transparent),
               child: PopupMenuButton<String>(
                 itemBuilder: (context) {
-                  return _style.map((title) {
+                  return _style.map((item) {
                     return PopupMenuItem(
-                      value: title,
-                      child: Text(title),
+                      value: item,
+                      child: Text(item),
                     );
                   }).toList();
                 },
@@ -49,7 +54,9 @@ class _InsertExpensePageState extends State<InsertExpensePage> {
                   mainAxisSize: MainAxisSize.min,
                   children: <Widget>[
                     Text(
-                      _currentItemSelected,
+                      _currentItemStyleSelected != null
+                          ? _currentItemStyleSelected
+                          : "",
                       style: TextStyle(fontSize: 15),
                     ),
                     Icon(
@@ -58,9 +65,9 @@ class _InsertExpensePageState extends State<InsertExpensePage> {
                     ),
                   ],
                 ),
-                onSelected: (v) {
+                onSelected: (value) {
                   setState(() {
-                    _currentItemSelected = v;
+                    _currentItemStyleSelected = value;
                   });
                 },
               ))
@@ -69,13 +76,12 @@ class _InsertExpensePageState extends State<InsertExpensePage> {
     );
   }
 
-  Widget _buildCalendar(){
+  Widget _buildCalendar() {
     return ListTile(
         leading: Icon(
           Icons.calendar_today,
           color: Colors.red,
         ),
-
         title: Text(_date),
         onTap: () async {
           final result = await showDatePicker(
@@ -91,27 +97,29 @@ class _InsertExpensePageState extends State<InsertExpensePage> {
         });
   }
 
-  Widget _buildInputText(TextEditingController controller,int maxLines ,TextInputType inputType, bool formatter, String hint){
+  Widget _buildInputText(TextEditingController controller, int maxLines,
+      TextInputType inputType, bool formatter, String hint) {
     return TextFormField(
       controller: controller,
       maxLines: maxLines,
       cursorColor: Colors.black,
       keyboardType: inputType,
-      inputFormatters: !formatter ? null : <TextInputFormatter>[
-        FilteringTextInputFormatter.digitsOnly
-      ],
+      inputFormatters: !formatter
+          ? null
+          : <TextInputFormatter>[FilteringTextInputFormatter.digitsOnly],
       decoration: new InputDecoration(
           border: InputBorder.none,
           focusedBorder: InputBorder.none,
           enabledBorder: InputBorder.none,
           errorBorder: InputBorder.none,
           disabledBorder: InputBorder.none,
-          contentPadding: EdgeInsets.only(left: 15, bottom: 11, top: 11, right: 15),
+          contentPadding:
+          EdgeInsets.only(left: 15, bottom: 11, top: 11, right: 15),
           hintText: hint),
     );
   }
 
-  Widget _buildButtonExit(){
+  Widget _buildButtonExit() {
     return RawMaterialButton(
       onPressed: () => Navigator.pop(context),
       elevation: 2.0,
@@ -126,7 +134,7 @@ class _InsertExpensePageState extends State<InsertExpensePage> {
     );
   }
 
-  Widget _buildButtonSave(){
+  Widget _buildButtonSave() {
     return RawMaterialButton(
       onPressed: () => _handleSaveNewExpense(),
       elevation: 2.0,
@@ -141,24 +149,28 @@ class _InsertExpensePageState extends State<InsertExpensePage> {
     );
   }
 
-  _handleSaveNewExpense() async{
-    try{
+  _handleSaveNewExpense() async {
+    try {
+      if (_contentController.text != "" && _amountController.text != "") {
+        final Expense expense = Expense(
+            expenseContent: _contentController.text,
+            amount: double.parse(_amountController.text),
+            type: _currentItemStyleSelected == 'Thu vào' ? 1 : 0,
+            categoryId: _category != null ? _category.id : null,
+            date: _date);
+        await dbHelper.insertExpense(expense);
+        Navigator.pop(context);
+      } else {
 
-      final Expense expense = Expense(
-          expenseContent: _contentController.text,
-          amount: double.parse(_amountController.text),
-          type: _currentItemSelected == 'Thu vào' ? 1 : 0 ,
-          date: _date
-      );
-      await dbHelper.insertExpense(expense);
-      Navigator.pop(context);
-
-    }catch(e){
+        _handleShowError();
+      }
+    } catch (e) {
+      print(e.toString());
       _handleShowError();
     }
   }
 
-  _handleShowError(){
+  _handleShowError() {
     return showDialog(
       context: context,
       child: AlertDialog(
@@ -170,6 +182,38 @@ class _InsertExpensePageState extends State<InsertExpensePage> {
                 Navigator.pop(context);
               },
               child: Text('OK')),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildFieldCategory() {
+    return Padding(
+      padding: EdgeInsets.only(left: 15),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Text('Danh mục'),
+          Row(
+            children: [
+              Text(_category != null ? _category.name : ''),
+              IconButton(
+                  icon: Icon(Icons.add),
+                  onPressed: () {
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) =>
+                                SelectCategoryExpensePage())).then((result) {
+                      if (result != null) {
+                        setState(() {
+                          _category = result;
+                        });
+                      }
+                    });
+                  }),
+            ],
+          )
         ],
       ),
     );
@@ -211,28 +255,27 @@ class _InsertExpensePageState extends State<InsertExpensePage> {
                 padding: EdgeInsets.symmetric(horizontal: 5, vertical: 20),
                 child: Column(
                   children: [
-                    Text('Thêm thu chi', style: TextStyle(fontSize: 25, color: Colors.blue)),
+                    Text('Thêm thu chi',
+                        style: TextStyle(fontSize: 25, color: Colors.blue)),
                     const Divider(),
-                    _buildInputText(_contentController, 3, TextInputType.text, false, 'Nội dung'),
+                    _buildDropdownSelect(),
                     const Divider(),
-                    _buildInputText(_amountController, 1, TextInputType.number, true, 'Số tiền'),
+                    _buildFieldCategory(),
                     const Divider(),
-                    _buildStyle(),
+                    _buildInputText(_amountController, 1, TextInputType.number,
+                        true, 'Số tiền'),
+                    const Divider(),
+                    _buildInputText(_contentController, 3, TextInputType.text,
+                        false, 'Nội dung'),
                     const Divider(),
                     _buildCalendar(),
                     const Divider(),
                   ],
                 ),
               ),
+              Positioned(top: -20, right: -40, child: _buildButtonExit()),
               Positioned(
-                  top: -20,
-                  right: -40,
-                  child: _buildButtonExit()),
-              Positioned(
-                  bottom: -30,
-                  left: 10,
-                  right: 10,
-                  child: _buildButtonSave()),
+                  bottom: -30, left: 10, right: 10, child: _buildButtonSave()),
             ],
           ),
         ),

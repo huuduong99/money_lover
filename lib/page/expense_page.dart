@@ -93,18 +93,18 @@ class _ExpensePageState extends State<ExpensePage> {
 
   Widget _buildItem(Expense expense) {
     return Container(
-      margin: EdgeInsets.symmetric(vertical: 5, horizontal: 5),
+      margin: EdgeInsets.symmetric(vertical: 5, horizontal: 10),
       padding: EdgeInsets.all(10.0),
       decoration: BoxDecoration(
-          color: Colors.brown,
+          color: Color(0xFFFFFFFF),
           boxShadow: [
             BoxShadow(
-                color: Colors.grey.withOpacity(0.5),
-                offset: Offset(0, 2),
+                color: Colors.grey,
+                offset: Offset(1, 2),
                 blurRadius: 1,
                 spreadRadius: 1)
           ],
-          borderRadius: BorderRadius.all(Radius.circular(20.0))),
+          borderRadius: BorderRadius.all(Radius.circular(12.0))),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
@@ -113,13 +113,13 @@ class _ExpensePageState extends State<ExpensePage> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(expense.expenseContent.toString(),
-                    style: TextStyle(color: Colors.white, fontSize: 20)),
-                const SizedBox(height: 20),
+                    style: TextStyle(color: Colors.blueAccent, fontSize: 20,fontWeight: FontWeight.bold)),
+                const SizedBox(height: 16),
                 Text('Danh mục: '+ (expense.categoryId != null ? _getNameCategory(expense.categoryId) : ''),
-                  style: TextStyle(color: Colors.white,fontSize: 16),),
+                  style: TextStyle(color: Color(0xFF48484A),fontSize: 16,fontWeight: FontWeight.bold),),
                 const SizedBox(height: 5),
                 Text('Ngày: ' +expense.date.toString(),
-                    style: TextStyle(color: Colors.white, fontSize: 13))
+                    style: TextStyle(color: Color(0xFF828284), fontSize: 13,fontWeight: FontWeight.bold))
               ],
             ),
           ),
@@ -128,8 +128,8 @@ class _ExpensePageState extends State<ExpensePage> {
               child: Row(
                 children: [
                   expense.type == 1
-                      ? Icon(Icons.add,color: Colors.green,size: 20,)
-                      : Icon(Icons.remove,color: Colors.red,size: 20,),
+                      ? Text('+',style: TextStyle(color: Colors.green))
+                      : Text("-",style: TextStyle(color: Colors.red)),
                   Text(
                       FlutterMoneyFormatter(amount: expense.amount)
                           .output
@@ -191,7 +191,7 @@ class _ExpensePageState extends State<ExpensePage> {
 
   Widget _buildBody() {
     return Container(
-      color: Colors.white,
+      color: Color(0xFFF2F3F5),
       width: double.infinity,
       child: _buildListView(),
     );

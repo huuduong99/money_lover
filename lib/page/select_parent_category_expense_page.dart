@@ -38,43 +38,30 @@ class _SelectParentCategoryExpensePageState extends State<SelectParentCategoryEx
 
   Widget _buildBody() {
     return Container(
-      child: _buildListView() ,
+      color: Color(0xFFF2F3F5),
+      child: _buildListView(),
     );
   }
 
   Widget _buildItemCategory(Category category) {
-    return Container(
-      margin: EdgeInsets.symmetric(vertical: 5, horizontal: 5),
-      padding: EdgeInsets.all(10.0),
-      decoration: BoxDecoration(
-          color: Colors.brown,
-          boxShadow: [
-            BoxShadow(
-                color: Colors.grey.withOpacity(0.5),
-                offset: Offset(0, 2),
-                blurRadius: 1,
-                spreadRadius: 1)
-          ],
-          borderRadius: BorderRadius.all(Radius.circular(20.0))),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Text(category.name, style: TextStyle(color: Colors.white, fontSize: 20)),
-          Align(
-              alignment: Alignment.center,
-              child: InkWell(
-                onTap: (){
-                  Navigator.pop(context,category);
-                },
-                child: CircleAvatar(
-                  radius: 30,
-                  child: Icon(
-                      Icons.done
-                  ),
-                ),
-              )
-          )
-        ],
+    return GestureDetector(
+      onTap: () => Navigator.pop(context, category),
+      child: Container(
+        margin: EdgeInsets.symmetric(vertical: 5, horizontal: 15),
+        padding: EdgeInsets.all(40.0),
+        decoration: BoxDecoration(
+            color: Color(0xFFFFFFFF),
+            boxShadow: [
+              BoxShadow(
+                  color: Colors.grey,
+                  offset: Offset(0, 2),
+                  blurRadius: 1,
+                  spreadRadius: 1)
+            ],
+            borderRadius: BorderRadius.all(Radius.circular(12.0))),
+        child: Text(category.name,
+            style: TextStyle(
+                color: Colors.blue, fontSize: 30, fontWeight: FontWeight.bold)),
       ),
     );
   }

@@ -98,23 +98,24 @@ class _CategotiesScreenState extends State<CategoriesPage> {
 
   Widget _buildItem(Category category) {
     return Container(
-        margin: EdgeInsets.symmetric(vertical: 5, horizontal: 5),
+        width: double.infinity,
+        margin: EdgeInsets.symmetric(vertical: 5, horizontal: 15),
         padding: EdgeInsets.all(20.0),
         decoration: BoxDecoration(
-            color: Colors.brown,
+            color: Color(0xFFFFFFFF),
             boxShadow: [
               BoxShadow(
-                  color: Colors.grey.withOpacity(0.5),
-                  offset: Offset(0, 2),
+                  color: Colors.grey,
+                  offset: Offset(1, 2),
                   blurRadius: 1,
                   spreadRadius: 1)
             ],
-            borderRadius: BorderRadius.all(Radius.circular(20.0))),
+            borderRadius: BorderRadius.all(Radius.circular(12.0))),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(category.name,
-                style: TextStyle(color: Colors.white, fontSize: 30)),
+                style: TextStyle(color: Colors.blue, fontSize: 25,fontWeight: FontWeight.bold)),
             const SizedBox(
               height: 10,
             ),
@@ -123,7 +124,7 @@ class _CategotiesScreenState extends State<CategoriesPage> {
                     (category.parentId != null
                         ? _getNameCategory(category.parentId)
                         : 'Không có'),
-                style: TextStyle(color: Colors.white, fontSize: 15))
+                style: TextStyle(color: Color(0xFF828284), fontSize: 15))
           ],
         ));
   }
@@ -174,7 +175,7 @@ class _CategotiesScreenState extends State<CategoriesPage> {
 
   Widget _buildBody() {
     return Container(
-        color: Colors.white,
+        color: Color(0xFFF2F3F5),
         width: double.infinity,
         child: _buildListViewCategory());
   }

@@ -20,23 +20,27 @@ class _InsertCategoryExpensePageState extends State<InsertCategoryExpensePage> {
     super.initState();
   }
 
-  Widget _buildInputText(TextEditingController controller,int maxLines ,TextInputType inputType, bool formatter, String hint){
+  Widget _buildInputText(TextEditingController controller, int maxLines,
+      TextInputType inputType, bool formatter, String hint) {
     return TextFormField(
       controller: controller,
       maxLines: maxLines,
       cursorColor: Colors.black,
       keyboardType: inputType,
-      inputFormatters: !formatter ? null : <TextInputFormatter>[
-        FilteringTextInputFormatter.digitsOnly
-      ],
+      inputFormatters: !formatter
+          ? null
+          : <TextInputFormatter>[FilteringTextInputFormatter.digitsOnly],
       decoration: new InputDecoration(
           border: InputBorder.none,
           focusedBorder: InputBorder.none,
           enabledBorder: InputBorder.none,
           errorBorder: InputBorder.none,
           disabledBorder: InputBorder.none,
-          contentPadding: EdgeInsets.only(left: 15, bottom: 11, top: 11, right: 15),
-          hintText: hint),
+          contentPadding:
+          EdgeInsets.only(left: 15, bottom: 11, top: 11, right: 15),
+          hintText: hint,
+          hintStyle: TextStyle(color: Colors.blue,fontWeight: FontWeight.bold)
+      ),
     );
   }
 
@@ -59,7 +63,7 @@ class _InsertCategoryExpensePageState extends State<InsertCategoryExpensePage> {
     return RawMaterialButton(
       onPressed: () => _handleSaveNewCategory(),
       elevation: 2.0,
-      fillColor: Color(0xFFC89AF2),
+      fillColor: Colors.blue,
       child: Icon(
         Icons.done,
         size: 35.0,
@@ -113,7 +117,7 @@ class _InsertCategoryExpensePageState extends State<InsertCategoryExpensePage> {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Text('Nhóm cha'),
+          Text('Nhóm cha',style: TextStyle(color: Colors.blue,fontWeight: FontWeight.bold,fontSize: 16),),
           Row(
             children: [
               Text(_category != null ? _category.name : ''),
@@ -143,29 +147,22 @@ class _InsertCategoryExpensePageState extends State<InsertCategoryExpensePage> {
     return Container(
       width: double.infinity,
       height: double.infinity,
-      decoration: BoxDecoration(
-        gradient: LinearGradient(
-          begin: Alignment.topCenter,
-          end: Alignment.bottomCenter,
-          colors: <Color>[
-            Color(0xFFC98CE4),
-            Color(0xFF936FDD),
-          ],
-        ),
-      ),
+      color: Color(0xFFF2F3F5),
       child: Align(
         alignment: Alignment.center,
         child: Container(
           height: MediaQuery.of(context).size.height,
           width: MediaQuery.of(context).size.width,
-          margin: EdgeInsets.only(left: 20, top: 50, right: 30, bottom: 200),
+          margin: EdgeInsets.only(left: 20, top: 50, right: 30, bottom: 50),
           decoration: BoxDecoration(
               color: Colors.white,
               boxShadow: [
                 BoxShadow(
-                    color: Colors.white.withOpacity(0.2),
-                    offset: Offset(15, -15),
-                    blurRadius: 1)
+                    color: Colors.grey,
+                    offset: Offset(1, 2),
+                    blurRadius: 3,
+                    spreadRadius: 3
+                )
               ],
               borderRadius: BorderRadius.all(Radius.circular(20.0))),
           child: Stack(
@@ -175,7 +172,8 @@ class _InsertCategoryExpensePageState extends State<InsertCategoryExpensePage> {
                 padding: EdgeInsets.symmetric(horizontal: 5, vertical: 20),
                 child: Column(
                   children: [
-                    Text('Thêm danh mục', style: TextStyle(fontSize: 25, color: Colors.blue)),
+                    Text('Thêm danh mục',
+                        style: TextStyle(fontSize: 25, color: Colors.blue,fontWeight: FontWeight.bold)),
                     const Divider(),
                     _buildInputText(_categoryNameController, 3, TextInputType.text, false, 'Tên danh mục'),
                     const Divider(),

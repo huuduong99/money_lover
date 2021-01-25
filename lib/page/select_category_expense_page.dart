@@ -31,6 +31,18 @@ class _SelectCategoryExpensePageState
     });
   }
 
+  _findCountChildren(Category category){
+    int count = 0;
+    _childrenCategory.forEach((item) {
+      if(item.parentId == category.id)
+      {
+        count++;
+      }
+    });
+
+    return count;
+  }
+
   Widget _buildRowItem(Category category) {
     return GestureDetector(
       onTap: (){
@@ -50,7 +62,7 @@ class _SelectCategoryExpensePageState
                         borderRadius: BorderRadius.circular(50.0)),
                     child: Text(
                       category.name[0],
-                      style: TextStyle(color: Color(0xFF28A745),fontWeight: FontWeight.bold,fontSize: 18),
+                      style: TextStyle(color: Colors.blue,fontWeight: FontWeight.bold,fontSize: 18),
                     ),
                     width: 50.0,
                     height: 50.0,
@@ -67,7 +79,7 @@ class _SelectCategoryExpensePageState
 
   Widget _buildExpansionTile(Category category) {
     return Theme(
-      data: ThemeData(dividerColor: Colors.transparent,accentColor: Colors.green),
+      data: ThemeData(dividerColor: Colors.transparent,accentColor: Colors.blue),
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 5),
         child: ExpansionTile(
@@ -79,17 +91,32 @@ class _SelectCategoryExpensePageState
               child: Row(
                 children: [
                   Container(
-                    alignment: Alignment.center,
-                    decoration: BoxDecoration(
-                        color: Colors.green,
-                        borderRadius: BorderRadius.circular(50.0)),
-                    width: 50.0,
-                    height: 50.0,
-                    child: Center(
-                        child: Text(
-                          category.name[0],
-                          style: TextStyle(color: Colors.white,fontWeight: FontWeight.bold,fontSize: 18),
-                        )),
+                      alignment: Alignment.center,
+                      decoration: BoxDecoration(
+                          color: Color(0xFFE9F6EC),
+                          borderRadius: BorderRadius.circular(50.0)),
+                      width: 50.0,
+                      height: 50.0,
+                      child: Stack(
+                        children: [
+                          Center(
+                              child: Text(
+                                category.name[0],
+                                style: TextStyle(color: Colors.blue,fontWeight: FontWeight.bold,fontSize: 18),
+                              )),
+                          Visibility(
+                            visible: _findCountChildren(category) == 0 ? false : true,
+                            child: Positioned(
+                                bottom: 0,
+                                right: 0,
+                                child: CircleAvatar(
+                                  backgroundColor: Colors.blue,
+                                  radius: 10,
+                                  child: Text(_findCountChildren(category).toString(),style: TextStyle(color: Colors.white)),
+                                )),
+                          )
+                        ],
+                      )
                   ),
                   SizedBox(width: 20.0),
                   Text(

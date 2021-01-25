@@ -48,7 +48,7 @@ class _UpdateExpensePageState extends State<UpdateExpensePage> {
         children: [
           Text(
             "Loại",
-            style: TextStyle(fontSize: 15),
+            style: TextStyle(fontSize: 18,color: Colors.blue,fontWeight: FontWeight.bold),
           ),
           Theme(
               data:
@@ -92,7 +92,7 @@ class _UpdateExpensePageState extends State<UpdateExpensePage> {
     return ListTile(
         leading: Icon(
           Icons.calendar_today,
-          color: Colors.red,
+          color: Colors.blue,
         ),
         title: Text(_date),
         onTap: () async {
@@ -127,7 +127,9 @@ class _UpdateExpensePageState extends State<UpdateExpensePage> {
           disabledBorder: InputBorder.none,
           contentPadding:
           EdgeInsets.only(left: 15, bottom: 11, top: 11, right: 15),
-          hintText: hint),
+          hintText: hint,
+          hintStyle: TextStyle(color: Colors.blue,fontWeight: FontWeight.bold)
+      ),
     );
   }
 
@@ -150,7 +152,7 @@ class _UpdateExpensePageState extends State<UpdateExpensePage> {
     return RawMaterialButton(
       onPressed: () => _handleSaveUpdateExpense(),
       elevation: 2.0,
-      fillColor: Color(0xFFC89AF2),
+      fillColor: Colors.blue,
       child: Icon(
         Icons.done,
         size: 35.0,
@@ -205,7 +207,7 @@ class _UpdateExpensePageState extends State<UpdateExpensePage> {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Text('Danh mục'),
+          Text('Danh mục',style: TextStyle(color: Colors.blue,fontWeight: FontWeight.bold,fontSize: 16),),
           Row(
             children: [
               Text(_category != null ? _category.name : ''),
@@ -235,16 +237,7 @@ class _UpdateExpensePageState extends State<UpdateExpensePage> {
     return Container(
       width: double.infinity,
       height: double.infinity,
-      decoration: BoxDecoration(
-        gradient: LinearGradient(
-          begin: Alignment.topCenter,
-          end: Alignment.bottomCenter,
-          colors: <Color>[
-            Color(0xFFC98CE4),
-            Color(0xFF936FDD),
-          ],
-        ),
-      ),
+      color: Color(0xFFF2F3F5),
       child: Align(
         alignment: Alignment.center,
         child: Container(
@@ -255,34 +248,39 @@ class _UpdateExpensePageState extends State<UpdateExpensePage> {
               color: Colors.white,
               boxShadow: [
                 BoxShadow(
-                    color: Colors.white.withOpacity(0.2),
-                    offset: Offset(15, -15),
-                    blurRadius: 1)
+                    color: Colors.grey,
+                    offset: Offset(1, 2),
+                    blurRadius: 3,
+                    spreadRadius: 3
+                )
               ],
               borderRadius: BorderRadius.all(Radius.circular(20.0))),
           child: Stack(
             overflow: Overflow.visible,
             children: [
-              Padding(
-                padding: EdgeInsets.symmetric(horizontal: 5, vertical: 20),
-                child: Column(
-                  children: [
-                    Text('Sửa thu chi',
-                        style: TextStyle(fontSize: 25, color: Colors.blue)),
-                    const Divider(),
-                    _buildDropdownSelect(),
-                    const Divider(),
-                    _buildFieldCategory(),
-                    const Divider(),
-                    _buildInputText(_amountController, 1, TextInputType.number,
-                        true, 'Số tiền'),
-                    const Divider(),
-                    _buildInputText(_contentController, 3, TextInputType.text,
-                        false, 'Nội dung'),
-                    const Divider(),
-                    _buildCalendar(),
-                    const Divider(),
-                  ],
+              SingleChildScrollView(
+                physics: AlwaysScrollableScrollPhysics(),
+                child: Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 5, vertical: 20),
+                  child: Column(
+                    children: [
+                      Text('Sửa thu chi',
+                          style: TextStyle(fontSize: 25, color: Colors.blue)),
+                      const Divider(),
+                      _buildDropdownSelect(),
+                      const Divider(),
+                      _buildFieldCategory(),
+                      const Divider(),
+                      _buildInputText(_amountController, 1, TextInputType.number,
+                          true, 'Số tiền'),
+                      const Divider(),
+                      _buildInputText(_contentController, 3, TextInputType.text,
+                          false, 'Nội dung'),
+                      const Divider(),
+                      _buildCalendar(),
+                      const Divider(),
+                    ],
+                  ),
                 ),
               ),
               Positioned(top: -20, right: -40, child: _buildButtonExit()),

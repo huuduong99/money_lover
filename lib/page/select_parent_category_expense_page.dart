@@ -1,3 +1,4 @@
+
 import 'package:flutter/material.dart';
 import 'package:money_lover/database/database_helper.dart';
 import 'package:money_lover/model/category_model.dart';
@@ -12,7 +13,8 @@ class SelectParentCategoryExpensePage extends StatefulWidget {
       _SelectParentCategoryExpensePageState();
 }
 
-class _SelectParentCategoryExpensePageState extends State<SelectParentCategoryExpensePage> {
+class _SelectParentCategoryExpensePageState
+    extends State<SelectParentCategoryExpensePage> {
   static DBHelper dbHelper = DBHelper();
   List<Category> _categories = <Category>[];
 
@@ -22,9 +24,10 @@ class _SelectParentCategoryExpensePageState extends State<SelectParentCategoryEx
     _getCategory();
   }
 
-  _getCategory() async{
+  _getCategory() async {
     int categoryId = widget.category != null ? widget.category.id : null;
-    final List<Category> listParentCategory = await dbHelper.getAllParentCateGory(categoryId);
+    final List<Category> listParentCategory =
+    await dbHelper.getAllParentCateGory(categoryId);
     setState(() {
       _categories = listParentCategory;
     });
@@ -53,7 +56,7 @@ class _SelectParentCategoryExpensePageState extends State<SelectParentCategoryEx
             color: Color(0xFFFFFFFF),
             boxShadow: [
               BoxShadow(
-                  color: Colors.grey,
+                  color: Colors.grey.withOpacity(0.5),
                   offset: Offset(0, 2),
                   blurRadius: 1,
                   spreadRadius: 1)
@@ -73,7 +76,8 @@ class _SelectParentCategoryExpensePageState extends State<SelectParentCategoryEx
         itemCount: _categories.length,
         physics: AlwaysScrollableScrollPhysics(),
         scrollDirection: Axis.vertical,
-        itemBuilder: (BuildContext context, int index) => _buildItemCategory(_categories[index]),
+        itemBuilder: (BuildContext context, int index) =>
+            _buildItemCategory(_categories[index]),
       ),
     );
   }

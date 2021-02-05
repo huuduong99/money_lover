@@ -3,8 +3,7 @@ import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:money_lover/database/database_helper.dart';
 import 'package:money_lover/model/category_model.dart';
 import 'package:money_lover/page/insert_category_expense_page.dart';
-
-import 'update_category_expense_page.dart';
+import 'package:money_lover/page/update_category_expense_page.dart';
 
 class CategoriesPage extends StatefulWidget {
   @override
@@ -24,9 +23,13 @@ class _CategotiesScreenState extends State<CategoriesPage> {
 
   void loadCategories() async {
     final List<Category> listCategory = await dbHelper.getCategories();
-    setState(() {
-      _categories = listCategory;
-    });
+
+    if (this.mounted) { // check whether the state object is in tree
+      setState(() {
+        _categories = listCategory;
+      });
+    }
+
   }
 
 
@@ -100,12 +103,12 @@ class _CategotiesScreenState extends State<CategoriesPage> {
     return Container(
         width: double.infinity,
         margin: EdgeInsets.symmetric(vertical: 5, horizontal: 15),
-        padding: EdgeInsets.all(20.0),
+        padding: EdgeInsets.all(30.0),
         decoration: BoxDecoration(
             color: Color(0xFFFFFFFF),
             boxShadow: [
               BoxShadow(
-                  color: Colors.grey,
+                  color: Colors.grey.withOpacity(0.5),
                   offset: Offset(1, 2),
                   blurRadius: 1,
                   spreadRadius: 1)

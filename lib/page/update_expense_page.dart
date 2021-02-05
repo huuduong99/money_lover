@@ -4,7 +4,9 @@ import 'package:intl/intl.dart';
 import 'package:money_lover/database/database_helper.dart';
 import 'package:money_lover/model/category_model.dart';
 import 'package:money_lover/model/expense_model.dart';
+import 'package:money_lover/model/payment_method_model.dart';
 import 'package:money_lover/page/select_category_expense_page.dart';
+import 'package:pattern_formatter/pattern_formatter.dart';
 
 class UpdateExpensePage extends StatefulWidget {
   final Expense expenseDetail;
@@ -17,13 +19,14 @@ class UpdateExpensePage extends StatefulWidget {
 
 class _UpdateExpensePageState extends State<UpdateExpensePage> {
   static DBHelper dbHelper = DBHelper();
-  final List<String> _style = ['Thu vào', 'Chi ra'];
+  final List<String> _styleExpense = ['Thu vào', 'Chi ra'];
+  List<String> _paymentMethods = <String>[];
+  List<PaymentMethod> _listPaymentMethod = <PaymentMethod>[];
   String _currentItemStyleSelected;
+  String _currentItemPaymentMethodSelected;
   Category _category;
-
-  final _dateFormat = new DateFormat('dd-MM-yyyy');
+  final _dateFormat = DateFormat('yyyy-MM-dd HH:mm');
   String _date;
-  TextEditingController _contentController = TextEditingController();
   TextEditingController _amountController = TextEditingController();
 
   @override
@@ -31,61 +34,88 @@ class _UpdateExpensePageState extends State<UpdateExpensePage> {
     super.initState();
     _date = _dateFormat.format(DateTime.now());
     _initialValueField();
+    _getPaymentMethod();
   }
 
   void _initialValueField() {
-    _contentController.text = widget.expenseDetail.expenseContent.toString();
+    _currentItemStyleSelected =
+    widget.expenseDetail.type == 1 ? 'Thu vào' : 'Chi ra';
     _amountController.text = widget.expenseDetail.amount.toInt().toString();
-    _currentItemStyleSelected = widget.expenseDetail.type == 1 ? 'Thu vào' : 'Chi ra';
     _date = widget.expenseDetail.date;
   }
 
-  Widget _buildDropdownSelect() {
+  _getPaymentMethod() async {
+    if (_paymentMethods != null) {
+      _paymentMethods.clear();
+    }
+    _listPaymentMethod = await dbHelper.getPaymentMethod();
+    for (var paymentMethod in _listPaymentMethod) {
+      _paymentMethods.add(paymentMethod.methodName);
+    }
+  }
+
+  _getPaymentMethodById(int id) async {
+    for (var paymentMethod in _listPaymentMethod) {
+      if (paymentMethod.id == id) {
+        return paymentMethod;
+      }
+    }
+    return null;
+  }
+
+  Widget _buildDropdownSelect(
+      String title, List<String> options, String currentItem, onSelected) {
     return Padding(
       padding: EdgeInsets.all(15),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           Text(
-            "Loại",
-            style: TextStyle(fontSize: 18,color: Colors.blue,fontWeight: FontWeight.bold),
+            title,
+            style: TextStyle(
+                fontSize: 16, color: Colors.blue, fontWeight: FontWeight.bold),
           ),
           Theme(
               data:
               Theme.of(context).copyWith(dividerColor: Colors.transparent),
               child: PopupMenuButton<String>(
-                itemBuilder: (context) {
-                  return _style.map((item) {
-                    return PopupMenuItem(
-                      value: item,
-                      child: Text(item),
-                    );
-                  }).toList();
-                },
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: <Widget>[
-                    Text(
-                      _currentItemStyleSelected != null
-                          ? _currentItemStyleSelected
-                          : "",
-                      style: TextStyle(fontSize: 15),
-                    ),
-                    Icon(
-                      Icons.arrow_drop_down,
-                      color: Colors.black,
-                    ),
-                  ],
-                ),
-                onSelected: (value) {
-                  setState(() {
-                    _currentItemStyleSelected = value;
-                  });
-                },
-              ))
+                  itemBuilder: (context) {
+                    return options.map((item) {
+                      return PopupMenuItem(
+                        value: item,
+                        child: Text(item),
+                      );
+                    }).toList();
+                  },
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: <Widget>[
+                      Text(
+                        currentItem != null ? currentItem : "",
+                        style: TextStyle(fontSize: 15),
+                      ),
+                      Icon(
+                        Icons.keyboard_arrow_down,
+                        color: Colors.black,
+                      ),
+                    ],
+                  ),
+                  onSelected: onSelected))
         ],
       ),
     );
+  }
+
+  _onSelectedType(value) {
+    setState(() {
+      _currentItemStyleSelected = value;
+    });
+  }
+
+  _onSelectedPaymentMethod(value) {
+    setState(() {
+      _currentItemPaymentMethodSelected = value;
+    });
   }
 
   Widget _buildCalendar() {
@@ -96,14 +126,19 @@ class _UpdateExpensePageState extends State<UpdateExpensePage> {
         ),
         title: Text(_date),
         onTap: () async {
-          final result = await showDatePicker(
+          final date = await showDatePicker(
               context: context,
               initialDate: DateTime.now(),
               firstDate: DateTime(1999, 1),
               lastDate: DateTime(2050, 12));
+
+          final time = await showTimePicker(
+              context: context, initialTime: TimeOfDay.now());
           setState(() {
-            if (result != null) {
-              _date = _dateFormat.format(result);
+            if (date != null && time != null) {
+              final dateTime = DateTime(
+                  date.year, date.month, date.day, time.hour, time.minute);
+              _date = _dateFormat.format(dateTime);
             }
           });
         });
@@ -118,7 +153,11 @@ class _UpdateExpensePageState extends State<UpdateExpensePage> {
       keyboardType: inputType,
       inputFormatters: !formatter
           ? null
-          : <TextInputFormatter>[FilteringTextInputFormatter.digitsOnly],
+          : <TextInputFormatter>[
+        FilteringTextInputFormatter.digitsOnly,
+        LengthLimitingTextInputFormatter(17),
+        ThousandsFormatter()
+      ],
       decoration: new InputDecoration(
           border: InputBorder.none,
           focusedBorder: InputBorder.none,
@@ -128,8 +167,8 @@ class _UpdateExpensePageState extends State<UpdateExpensePage> {
           contentPadding:
           EdgeInsets.only(left: 15, bottom: 11, top: 11, right: 15),
           hintText: hint,
-          hintStyle: TextStyle(color: Colors.blue,fontWeight: FontWeight.bold)
-      ),
+          hintStyle:
+          TextStyle(color: Colors.blue, fontWeight: FontWeight.bold)),
     );
   }
 
@@ -165,16 +204,36 @@ class _UpdateExpensePageState extends State<UpdateExpensePage> {
 
   _handleSaveUpdateExpense() async {
     try {
-      if (_contentController.text != "" && _amountController.text != "") {
-        final Expense expense = Expense(
+      if (_amountController.text != null) {
+        final paymentMethod = _currentItemPaymentMethodSelected != null
+            ? _listPaymentMethod[_paymentMethods.indexOf(_currentItemPaymentMethodSelected)]
+            : _getPaymentMethodById(widget.expenseDetail.paymentMethodId);
+        final amount = double.parse(
+            _amountController.text.replaceAll(new RegExp(r','), ''));
+        final type = _currentItemStyleSelected == 'Thu vào' ? 1 : 0;
+
+        await dbHelper.updateExpense(Expense(
             id: widget.expenseDetail.id,
-            expenseContent: _contentController.text,
-            amount: double.parse(_amountController.text),
-            type: _currentItemStyleSelected == 'Thu vào' ? 1 : 0,
-            categoryId: _category != null ? _category.id : widget.expenseDetail.categoryId,
-            date: _date
-        );
-        await dbHelper.insertExpense(expense);
+            amount: amount,
+            type: type,
+            categoryId: _category != null
+                ? _category.id
+                : widget.expenseDetail.categoryId,
+            paymentMethodId: paymentMethod != null
+                ? paymentMethod.id
+                : widget.expenseDetail.paymentMethodId,
+            date: _date));
+
+        if (paymentMethod != null) {
+          await dbHelper.updatePaymentMethod(PaymentMethod(
+            id: paymentMethod.id,
+            methodName: paymentMethod.methodName,
+            balance: type == 1
+                ? (paymentMethod.balance + amount)
+                : (paymentMethod.balance - amount),
+          ));
+        }
+
         Navigator.pop(context);
       } else {
         _handleShowError();
@@ -207,12 +266,16 @@ class _UpdateExpensePageState extends State<UpdateExpensePage> {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Text('Danh mục',style: TextStyle(color: Colors.blue,fontWeight: FontWeight.bold,fontSize: 16),),
+          Text(
+            'Danh mục',
+            style: TextStyle(
+                color: Colors.blue, fontWeight: FontWeight.bold, fontSize: 16),
+          ),
           Row(
             children: [
               Text(_category != null ? _category.name : ''),
               IconButton(
-                  icon: Icon(Icons.add),
+                  icon: Icon(Icons.keyboard_arrow_right_sharp),
                   onPressed: () {
                     Navigator.push(
                         context,
@@ -248,11 +311,10 @@ class _UpdateExpensePageState extends State<UpdateExpensePage> {
               color: Colors.white,
               boxShadow: [
                 BoxShadow(
-                    color: Colors.grey,
+                    color: Colors.grey.withOpacity(0.5),
                     offset: Offset(1, 2),
-                    blurRadius: 3,
-                    spreadRadius: 3
-                )
+                    blurRadius: 1,
+                    spreadRadius: 1)
               ],
               borderRadius: BorderRadius.all(Radius.circular(20.0))),
           child: Stack(
@@ -267,15 +329,19 @@ class _UpdateExpensePageState extends State<UpdateExpensePage> {
                       Text('Sửa thu chi',
                           style: TextStyle(fontSize: 25, color: Colors.blue)),
                       const Divider(),
-                      _buildDropdownSelect(),
-                      const Divider(),
                       _buildFieldCategory(),
                       const Divider(),
-                      _buildInputText(_amountController, 1, TextInputType.number,
-                          true, 'Số tiền'),
+                      _buildDropdownSelect('Loại', _styleExpense,
+                          _currentItemStyleSelected, _onSelectedType),
                       const Divider(),
-                      _buildInputText(_contentController, 3, TextInputType.text,
-                          false, 'Nội dung'),
+                      _buildDropdownSelect(
+                          'Nguồn tiền',
+                          _paymentMethods,
+                          _currentItemPaymentMethodSelected,
+                          _onSelectedPaymentMethod),
+                      const Divider(),
+                      _buildInputText(_amountController, 1,
+                          TextInputType.number, true, 'Số tiền'),
                       const Divider(),
                       _buildCalendar(),
                       const Divider(),

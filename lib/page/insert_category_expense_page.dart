@@ -122,7 +122,7 @@ class _InsertCategoryExpensePageState extends State<InsertCategoryExpensePage> {
             children: [
               Text(_category != null ? _category.name : ''),
               IconButton(
-                  icon: Icon(Icons.add),
+                  icon: Icon(Icons.keyboard_arrow_right_sharp),
                   onPressed: () {
                     Navigator.push(
                         context,
@@ -153,15 +153,15 @@ class _InsertCategoryExpensePageState extends State<InsertCategoryExpensePage> {
         child: Container(
           height: MediaQuery.of(context).size.height,
           width: MediaQuery.of(context).size.width,
-          margin: EdgeInsets.only(left: 20, top: 50, right: 30, bottom: 50),
+          margin: EdgeInsets.only(left: 20, top: 50, right: 30, bottom: 70),
           decoration: BoxDecoration(
               color: Colors.white,
               boxShadow: [
                 BoxShadow(
-                    color: Colors.grey,
+                    color: Colors.grey.withOpacity(0.5),
                     offset: Offset(1, 2),
-                    blurRadius: 3,
-                    spreadRadius: 3
+                    blurRadius: 1,
+                    spreadRadius: 1
                 )
               ],
               borderRadius: BorderRadius.all(Radius.circular(20.0))),
